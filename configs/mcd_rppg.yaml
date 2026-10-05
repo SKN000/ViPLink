@@ -1,0 +1,44 @@
+data:
+  video_dir: data/mcd_rppg/video_traces   # <sid>_<camera>_<session>.npy, (3, T)
+  ppg_dir: data/mcd_rppg/ppg              # <sid>_<camera>_<session>.txt, synchronized cPPG
+  camera: FullHDwebcam
+  n_folds: 4
+  fold: 0
+  split_seed: 42                          # subject-level random k-fold split
+  fs: 30
+  window_sec: 45.0
+  train_stride_sec: 22.5
+  val_fraction: 0.1                       # validation subjects held out from the training fold
+
+model:
+  embed_dim: 256
+  proj_dim: 128
+  dropout: 0.3
+
+loss:
+  weights: {align: 0.40, arc: 0.30, compact: 0.15, bridge: 0.10, reg: 0.05}
+  arc_scale: 30.0
+  arc_margin: 0.3
+  center_momentum: 0.01
+  temperature_start: 0.1
+  temperature_end: 0.03
+  temperature_anneal_epochs: 80
+
+train:
+  epochs: 150
+  batch_size: 128
+  lr: 3.0e-4
+  weight_decay: 1.0e-2
+  warmup_epochs: 5
+  grad_clip: 1.0
+  async_warmup_epochs: 80
+  eval_every: 2
+  patience: 40
+  seed: 42
+  num_workers: 0
+  output_dir: runs/viplink_mcd_fold0
+
+eval:
+  stride_sec: 10.0
+  cca_fit_stride_sec: 22.5
+  cca_components: [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24]
